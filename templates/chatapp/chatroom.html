@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="stylesheet" href='{% static "asserts/css/bootstrap.min.css" %}'>
+	<title>Chat</title>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">   
+<style>
+
+</style>
+</head>
+
+<body style="background-color: aquamarine;">
+	<header>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container-fluid">
+				<a href="#" class="navbar-brand">
+					<img src='{% static "asserts\images\wechatlogo.png" %}' class="img-thumbnail" width=50 height=50 alt="logo">
+				</a>
+			
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavBar"
+                    aria-controls="myNavBar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="myNavBar">
+                    <ul class="navbar-nav ml-auto">
+						<li class="nav-item">
+                            <a href="#" class="nav-link"><strong>Reset ChatRoom Password</strong></a>
+                        </li>
+                            <a href="#" class="nav-link"><strong>Join ChatRoom</strong></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link"><strong>Report ChatRoom</strong></a>
+                        </li>
+                        <li class="nav-item">
+                            <a  href="#" class="nav-link"><strong>Account Settings</strong></a>
+                            
+                        </li>
+                        
+                        
+                    </ul>
+                </div>
+			</div>
+		</nav>
+	</header>
+	<section class="container jumbotron">
+		<div class="row">
+			<div class="col-12 col-md-8">
+				<form method="POST">
+					<div class="form-group">
+						<label for="roomname" class="h6">Create Room name</label>
+						<input type="text" id="roomname" name="chatroom" class="form-control">
+						<label for="username" class="h6">Enter User name</label>
+						<input type="text" id="username" name="user" class="form-control"><br>
+						<label for="roompassword" class="h6">Create Password</label>
+						<input type="text" id="roompassword" name="roompassword" class="form-control"><br>
+						{% csrf_token %}
+						<button type="submit" class="btn btn-success" name="createroom">Create Room</button>
+					</div>
+				</form>
+			</div>
+			<div class="col-12 col-md-4" style="overflow:auto;">
+				<h4 class="text-primary">Rooms Alredy exists</h4>
+				<form method="POST" class="form-inline">
+					{% for i in rooms %}
+					<div class="form-group mx-sm-2 mb-1">
+						<label for="inputPassword2" class="sr-only">Password</label>
+						<input type="password" class="form-control" id="inputPassword2" name="entrypswd" placeholder="Password">
+					  </div>
+					{% csrf_token %}
+					<button type="submit" class="btn btn-success ml-2 mb-1" value={{i.name}} name="rname"">{{i.name}}</button><br><br>
+					{% endfor %}
+				</form>
+			</div>
+		</div>
+		<center><h3 class="alert alert-danger">{{msg}}</h3></center>
+	</section>
+			
+		
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<script src='{% static "asserts\js\jquery.min.js" %}'></script>
+	<script src='{% static "asserts\js\bootstrap.min.js" %}'></script>        
+</body>
+</html>

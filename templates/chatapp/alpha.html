@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<link rel="stylesheet" href='{% static "asserts\css\bootstrap.min.css" %}'>
+	<title>Chat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">   
+	<script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+<style>
+.chat{
+  height: 91vh;
+}
+.chat2{
+  height: 70vh;
+}
+.cwidth{
+  width: 100%;
+}
+</style>
+</head>
+
+<body style="background-color: aquamarine;">
+	<!--<header>
+		<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+			<div class="container-fluid">
+				<a href="#" class="navbar-brand">
+					<img src='{% static "asserts\images\wechatlogo.png" %}' class="img-thumbnail" width=50 height=50 alt="logo">
+				</a>
+			
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#myNavBar"
+                    aria-controls="myNavBar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="myNavBar">
+                    <ul class="navbar-nav ml-auto">
+						<li class="nav-item">
+                            <a href="/blog.html" class="nav-link"><strong>Create ChatRoom</strong></a>
+                        </li>
+                            <a href="/index.html" class="nav-link"><strong>My ChatRooms</strong></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="/about.html" class="nav-link"><strong>Buy ChatRooms</strong></a>
+                        </li>
+                        <li class="nav-item">
+                            <a  href="#" class="nav-link"><strong>Account Settings</strong></a>
+                            
+                        </li>
+                        
+                        
+                    </ul>
+                </div>
+			</div>
+		</nav>
+	</header>-->
+	<div class="container mt-5">
+		<div class="row">
+			<div class="col">
+				<div class="bg-success" style="height:7vh">
+					<img src='{% static "asserts\images\user.png"  %}' class="rounded-circle float-left p-1" alt="user" width=45 height=45></img>
+					<i class="fa fa-camera" style="font-size:30px;float:right;padding:5px;"></i>
+					<center><h5 class="text-white">{{room}}-Chat Room</h5></center>
+				</div>
+			</div>
+		</div>
+	
+		<div class="bg-light chat2 " style="overflow:auto;" id="display">
+			
+			
+		</div>
+		<div class="row bg-dark">
+			<footer style="position:fixed;bottom:0;" class=" container  mb-3">
+				<div class="row">
+					<div class="col-1">
+						<i class="fa fa-smile-o" style="font-size:36px"></i>
+					</div>
+				<div class="col-11">
+					<div class="row">
+						<div class="col-9">
+							<form class="form-inline" id="sabarish">
+							
+								<div class="form-group">
+									<textarea class="form-control ml-1 " id="message" rows="1" cols="90"></textarea>
+									<input type="hidden" name="username" id="username" value="{{chatname}}"/>
+									<input type="hidden" name="room_id" id="room_id" value="{{room_details.id}}"/>
+									
+								</div>
+						</div>
+							<div class="col-3">
+								{% csrf_token %}
+								<button type="submit" class="btn btn-success mr-2"><i class="fa fa-send" style="font-size:24px"></i></button>
+							</div>
+							</form>
+					</div>
+					
+						
+					
+				</div>
+				
+			</div>
+			
+			
+		</footer>
+		
+
+		</div>
+		
+
+		
+	</div>	
+	
+	<script type="text/javascript">
+		$(document).on('submit','#sabarish',function(e){
+		  e.preventDefault();
+	  
+		  $.ajax({
+			type:'POST',
+			url:'send/',
+			data:{
+				username:$('#username').val(),
+				room_id:$('#room_id').val(),
+				message:$('#message').val(),
+			  csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+			},
+			success: function(data){
+			   //alert(data)
+			}
+		  });
+		  document.getElementById('message').value = ''
+		});
+		
+	</script>			
+		
+	<script type="text/javascript">
+
+			$(document).ready(function(){
+		
+			setInterval(function(){
+			$.ajax({
+				type: 'GET',
+				url : "getmsg/",
+				success: function(response){
+					//console.log(response);
+				$("#display").empty();
+				for (var key in response.messages)
+					{
+						var temp="<div class='carea'><p class='text-primary'>"+response.messages[key].user+"<small class='text-muted'>"+'('+response.messages[key].date+')'+"</small></p><p id='msg'>"+response.messages[key].message+"</p></div>";
+						$("#display").append(temp);
+					}
+				},
+				error: function(response){
+					alert('An error occured')
+				}
+			});
+		},1000);
+		})
+	
+	</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<script src='{% static "asserts\js\jquery.min.js" %}' ></script>
+	<script src='{% static "asserts\js\bootstrap.min.js" %}'></script>        
+</body>
+</html>

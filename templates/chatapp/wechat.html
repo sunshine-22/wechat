@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+<title>We::Chat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script   src="https://code.jquery.com/jquery-3.1.1.min.js"   integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="   crossorigin="anonymous"></script>
+<style>
+* {
+  box-sizing: border-box;
+  padding:0;
+  margin:0;
+}
+.chatrooms{width:90%;margin-left:5%;margin-top:5%;height:65%;overflow:auto;}
+.rcbtn{margin-top:10%;width:40%;margin-left:30%;text-align:center;height:30px;}
+.close{float:right;border:1px solid #cccccc;height:30px;background-color:#cccccc}
+.croom{width:30%;height:40%;border:3px solid #cccccc;margin-left:0.3%;margin-top:2%;display:none;background-color:#cccccc;z-index:1;position:absolute}
+.searchbtn{margin-left:1%;margin-top:2%;height:35px;width:10%;background-color:#00ffff;border:1px solid #00ffff}
+.search{margin-left:3%;width:70%;height:35px;margin-top:2%;}
+.room{margin-top:3%;width:80%;margin-left:10%;height:5%;color:white;background-color:#33ff66;border:2px solid #33ff66}
+.send{width:35px;height:35px;}
+.msgbox{margin-top:2vh;width:90%;height:40px;margin-left:1%;border:1px solid #cccccc;}
+.messagearea{border:1px solid #cccccc;width:100%;height:10%;background-color:#cccccc;margin-top:80vh;}
+.main{border:0px solid blue;width:100vw;height:100vh;display:flex;}
+.chatinfo{border:0px solid #00ffff;width:30.5%;height:100vh;background-color:#00ffff}
+.chatarea{border:0px solid #cccccc;width:69.5%;height:99vh.5;float:left;background-color:#cccccc;}
+.logo{border:0px solid #33ff66;width:100%;height:10%;background-color:#33ff66;}
+.u-det{border:0px solid #6633ff;width:100%;height:10%;background-color:#660099;}
+.chatmessages{border:1px solid yellow;width:90%;margin-top:10vh;margin-left:1%;height:71.5vh;}
+</style>
+</head>
+<body>
+	<section class="main">
+		<div class="chatinfo">
+		<div class="logo"></div>
+		<input type="text" class="search" placeholder="Search...."></input><button class="searchbtn"><i class="fa fa-search" style="font-size:18px"></i></button>
+		<br><br>
+		<hr>
+		<button class="room"  onclick="show()">Create New Room</button>
+		<div class="croom" id="createroom">
+		<button class="close" onclick="closey()"><i class="fa fa-close" style="font-size:25px"></i></button>
+		<form method="POST">
+		<h3 style="margin-top:10%;margin-left:30%;">Enter Room Name:</h3>
+		<input type="text" style="margin-left:28%;width:50%" name="roomname">
+		<h3 style="margin-top:10%;margin-left:30%;">Enter Chat Name:</h3>
+		<input type="text" style="margin-left:28%;width:50%" name="username" >
+		{% csrf_token %}
+		<input type="submit" value="Create" class="rcbtn" name="createroom">
+		</form>
+		</div>
+		
+		<div class="chatrooms">
+		<form method="POST">
+		{% for i in rooms %}
+		{% csrf_token %}
+		<input type="submit" style="width:70%;margin-left:15%;padding:3%;margin-top:5%;background-color:#0066ff;border:1px solid #0066ff;color:white" value={{i.name}} name="rname" onclick="showmsg()"></input>
+		{% endfor %}
+		</form>
+		</div>
+		<center><h3>{{msg}}</h3><center>
+		</div>
+		
+		<div class="chatarea">
+		<div class="u-det">
+		<center><h2 style="padding-top:3%;color:white">{{room}} Chat Room</h2></center>
+		<div class="chatmessages" id="display">
+		</div>
+		</div>
+		
+		<div class="messagearea">
+		<form id="sabarish">
+			{% csrf_token %}
+			<input type="hidden" name="username" id="username" value="{{chatname}}"/>
+			<input type="hidden" name="room_id" id="room_id" value="{{room_details.id}}"/>
+			<input type="text" placeholder="Enter Message...." id="message" class="msgbox"/>
+			<input type="submit" style="background-color:#cccccc;border:1px solid #cccccc" value="send"><!--<i class="fa fa-send-o send" style="font-size:27px"></i></input>-->
+		</form>
+		<!--<button style="background-color:#cccccc;border:1px solid #cccccc"><i class="fa fa-folder-open" style="font-size:27px"></i></button>
+		<button style="background-color:#cccccc;border:1px solid #cccccc"><i class="	fa fa-microphone" style="font-size:27px"></i></button>-->
+		
+		</div>
+		</div>
+	</section>
+<script type="text/javascript">
+
+    $(document).ready(function(){
+
+	setInterval(function(){
+    $.ajax({
+        type: 'GET',
+        url : "/getmsg",
+        success: function(response){
+            //console.log(response);
+        $("#display").empty();
+        for (var key in response.messages)
+            {
+                var temp="<div class='carea'><center><b>"+response.messages[key].user+"</center></b><p id='msg'>"+response.messages[key].message+"</p><h7>"+response.messages[key].date+"</h7></div>";
+                $("#display").append(temp);
+            }
+        },
+        error: function(response){
+            alert('An error occured')
+        }
+    });
+},1000);
+})
+
+</script>	
+<script type="text/javascript">
+  $(document).on('submit','#sabarish',function(e){
+    e.preventDefault();
+
+    $.ajax({
+      type:'POST',
+      url:'send/',
+      data:{
+          username:$('#username').val(),
+          room_id:$('#room_id').val(),
+          message:$('#message').val(),
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val(),
+      },
+      success: function(data){
+         //alert(data)
+      }
+    });
+    document.getElementById('message').value = ''
+  });
+  
+</script>
+<script>
+	function show(){
+	var a=document.getElementById("createroom");
+	a.style.display="block";
+	}
+	</script>
+	<script>
+	function closey(){
+	var b=document.getElementById("createroom");
+	b.style.display="none";
+	}
+	</script>
+</body>
+</html>
